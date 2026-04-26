@@ -250,7 +250,8 @@ body.ch #cx2{background:var(--m);}
 /* Persona panel */
 .hero-img-panel{
   position:relative; height:100vh;
-  display:flex; align-items:flex-end; justify-content:center; overflow:hidden;
+  display:flex; align-items:flex-end; justify-content:center;
+  overflow:hidden;
 }
 .img-blob{
   position:absolute; bottom:0; left:50%; transform:translateX(-50%);
@@ -266,28 +267,53 @@ body.ch #cx2{background:var(--m);}
 }
 .persona-ring::before{content:''; position:absolute; top:6px; left:6px; right:6px; bottom:6px; border-radius:50%; border:1px dashed rgba(0,245,255,.07);}
 @keyframes rspin{to{transform:translateX(-50%) rotate(360deg)}}
-/* persona-wrap fills the panel height fully, images sit at the bottom */
+
+/*
+  persona-wrap: fixed pixel height — forces all 4 images to EXACTLY the same
+  container size, giving every persona identical visual height on screen.
+  overflow:hidden clips the 16px bottom extension on every image.
+*/
 .persona-wrap{
-  position:relative; width:100%; height:100%;
+  position:absolute;
+  bottom:0; left:0; right:0;
+  height:min(660px, 88vh);
   overflow:hidden;
 }
+
+/*
+  Each persona sits bottom:-16px — always 16px BELOW the clip boundary.
+  height:calc(100% + 16px) compensates so the person fills the full container.
+  The float animation moves up 12px max → bottom goes to (-16+12)=-4px → still hidden.
+  Result: zero gap visible at any point in the animation cycle, for all 4 images.
+*/
 .persona{
-  position:absolute; bottom:0; left:0; right:0;
-  width:100%; height:92%; /* leaves top 8% as float headroom so image never exits viewport */
-  object-fit:contain; object-position:bottom center;
-  opacity:0; transition:opacity .9s var(--ease), transform .9s var(--ease);
+  position:absolute;
+  bottom:-16px;
+  left:50%;
+  transform:translateX(-50%) scale(.96) translateY(8px);
+  width:auto;
+  max-width:100%;
+  height:calc(100% + 16px);
+  object-fit:contain;
+  object-position:bottom center;
+  opacity:0;
+  transition:opacity .9s var(--ease), transform .9s var(--ease);
   filter:drop-shadow(0 0 28px rgba(0,245,255,.18));
-  transform:scale(.96) translateY(8px);
 }
 .persona.show{
   opacity:1;
-  transform:scale(1) translateY(0);
+  transform:translateX(-50%) scale(1) translateY(0);
   animation:imgfloat 5s ease-in-out infinite;
 }
-/* Float only 10px upward — well within the 8% headroom — no gap ever visible */
+/*
+  Float moves image up 12px maximum.
+  At rest    → bottom:-16px     (16px below clip — hidden — NO GAP)
+  At peak    → bottom:-16+12=-4px (4px below clip — still hidden — NO GAP)
+  translateX(-50%) is kept on every keyframe so horizontal centering never breaks.
+*/
 @keyframes imgfloat{
-  0%,100%{transform:scale(1) translateY(0);}
-  50%{transform:scale(1) translateY(-10px);}
+  0%,100%{ transform:translateX(-50%) translateY(0); }
+  50%{     transform:translateX(-50%) translateY(-12px); }
 }
 .role-tag{
   position:absolute; top:22%; right:-14px;
@@ -830,12 +856,12 @@ footer{background:var(--void); border-top:1px solid var(--cb); padding:38px 0; p
         </div>
         <div class="h-socials">
           <a href="https://linkedin.com/in/collinsogbuju" target="_blank" class="h-soc" title="LinkedIn"><span class="iconify" data-icon="mdi:linkedin"></span></a>
-          <a href="https://github.com/collinsogbuju" target="_blank" class="h-soc" title="GitHub"><span class="iconify" data-icon="mdi:github"></span></a>
+          <a href="https://github.com/koltectm" target="_blank" class="h-soc" title="GitHub"><span class="iconify" data-icon="mdi:github"></span></a>
           <a href="https://medium.com/@collinsogbuju" target="_blank" class="h-soc" title="Medium"><span class="iconify" data-icon="simple-icons:medium"></span></a>
-          <a href="https://twitter.com/collinsogbuju" target="_blank" class="h-soc" title="Twitter / X"><span class="iconify" data-icon="mdi:twitter"></span></a>
-          <a href="https://instagram.com/collinsogbuju" target="_blank" class="h-soc" title="Instagram"><span class="iconify" data-icon="mdi:instagram"></span></a>
-          <a href="https://facebook.com/collinsogbuju" target="_blank" class="h-soc" title="Facebook"><span class="iconify" data-icon="mdi:facebook"></span></a>
-          <a href="https://www.upwork.com" target="_blank" class="h-soc" title="Upwork"><span class="iconify" data-icon="simple-icons:upwork"></span></a>
+          <a href="https://x.com/KoltecTm" target="_blank" class="h-soc" title="Twitter / X"><span class="iconify" data-icon="mdi:twitter"></span></a>
+          <a href="https://instagram.com/collins.ogbuju" target="_blank" class="h-soc" title="Instagram"><span class="iconify" data-icon="mdi:instagram"></span></a>
+          <a href="https://www.facebook.com/share/1GGQ4sUxUC/" target="_blank" class="h-soc" title="Facebook"><span class="iconify" data-icon="mdi:facebook"></span></a>
+          <a href="https://www.upwork.com/freelancers/~012d50ad658f1fea3e?mp_source=share" target="_blank" class="h-soc" title="Upwork"><span class="iconify" data-icon="simple-icons:upwork"></span></a>
           <a href="mailto:collinsogbuju@gmail.com" class="h-soc" title="Email"><span class="iconify" data-icon="mdi:email-outline"></span></a>
         </div>
       </div>
@@ -1025,10 +1051,10 @@ footer{background:var(--void); border-top:1px solid var(--cb); padding:38px 0; p
         <div class="ci-links">
           <a href="mailto:collinsogbuju@gmail.com" class="ci-lk"><span class="iconify" data-icon="mdi:email-outline"></span>collinsogbuju@gmail.com</a>
           <a href="https://linkedin.com/in/collinsogbuju" target="_blank" class="ci-lk"><span class="iconify" data-icon="mdi:linkedin"></span>linkedin.com/in/collinsogbuju</a>
-          <a href="https://github.com/collinsogbuju" target="_blank" class="ci-lk"><span class="iconify" data-icon="mdi:github"></span>github.com/collinsogbuju</a>
+          <a href="https://github.com/koltectm" target="_blank" class="ci-lk"><span class="iconify" data-icon="mdi:github"></span>github.com/collinsogbuju</a>
           <a href="https://medium.com/@collinsogbuju" target="_blank" class="ci-lk"><span class="iconify" data-icon="simple-icons:medium"></span>medium.com/@collinsogbuju</a>
-          <a href="https://twitter.com/collinsogbuju" target="_blank" class="ci-lk"><span class="iconify" data-icon="mdi:twitter"></span>@collinsogbuju</a>
-          <a href="https://instagram.com/collinsogbuju" target="_blank" class="ci-lk"><span class="iconify" data-icon="mdi:instagram"></span>@collinsogbuju</a>
+          <a href="https://x.com/KoltecTm" target="_blank" class="ci-lk"><span class="iconify" data-icon="mdi:twitter"></span>@collinsogbuju</a>
+          <a href="https://instagram.com/collins.ogbuju" target="_blank" class="ci-lk"><span class="iconify" data-icon="mdi:instagram"></span>@collinsogbuju</a>
           <a href="https://www.paypal.com/ncp/payment/FAYZMJE5Z4H3S" target="_blank" class="ci-lk"><span class="iconify" data-icon="mdi:paypal"></span>PayPal Tip / Quick Payment</a>
         </div>
         <a href="assets/resume/Collins_Ogbuju_CV.pdf" download class="cv-dl">
@@ -1070,11 +1096,11 @@ footer{background:var(--void); border-top:1px solid var(--cb); padding:38px 0; p
       <div class="rvr">
         <form class="cform" id="cform">
           <div class="frow">
-            <div class="fg"><label>First Name</label><input type="text" placeholder="Chidi" required></div>
-            <div class="fg"><label>Last Name</label><input type="text" placeholder="Okonkwo"></div>
+            <div class="fg"><label>First Name</label><input type="text" placeholder="First Name" required></div>
+            <div class="fg"><label>Last Name</label><input type="text" placeholder="Last Name"></div>
           </div>
-          <div class="fg"><label>Email Address</label><input type="email" placeholder="chidi@seplat.com" required></div>
-          <div class="fg"><label>Subject</label><input type="text" placeholder="Graduate Engineer Role at Seplat Energy"></div>
+          <div class="fg"><label>Email Address</label><input type="email" placeholder="name@example.com" required></div>
+          <div class="fg"><label>Subject</label><input type="text" placeholder="Graduate Engineer Role"></div>
           <div class="fg"><label>Message</label><textarea placeholder="Tell me about the opportunity or project..."></textarea></div>
           <button type="submit" class="fsub"><span>Send Message</span></button>
         </form>
@@ -1108,6 +1134,25 @@ footer{background:var(--void); border-top:1px solid var(--cb); padding:38px 0; p
       <div class="book-field">
         <label>Your Email</label>
         <input type="email" id="b-email" placeholder="your@email.com">
+      </div>
+      <div class="book-field">
+        <label>Preferred Day</label>
+        <select id="b-day" onchange="updateSlotInfo()">
+          <option value="">-- Select a day --</option>
+          <option value="tuesday">Tuesday (Engineering &amp; Career) — 6:00pm–7:00pm WAT</option>
+          <option value="thursday">Thursday (Freelance &amp; Projects) — 6:00pm–7:00pm WAT</option>
+          <option value="saturday-am">Saturday Morning (All Enquiries) — 10:00am–12:00pm WAT</option>
+          <option value="saturday-pm">Saturday Afternoon (Overflow) — 2:00pm–3:00pm WAT</option>
+        </select>
+      </div>
+      <!-- Slot info box — shown after day is selected -->
+      <div id="slot-info" style="display:none;background:rgba(0,245,255,.05);border:1px solid rgba(0,245,255,.18);border-radius:8px;padding:12px 14px;margin-bottom:14px;">
+        <div style="font-family:var(--fh);font-size:10px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--c);margin-bottom:6px;">Your Meeting Link</div>
+        <a id="slot-meet-link" href="#" target="_blank" style="font-family:var(--fd);font-size:12px;color:var(--c);word-break:break-all;text-decoration:none;letter-spacing:.03em;display:flex;align-items:center;gap:6px;">
+          <span class="iconify" data-icon="mdi:video-outline" style="font-size:14px;flex-shrink:0;"></span>
+          <span id="slot-meet-text"></span>
+        </a>
+        <div id="slot-note" style="font-size:11px;color:var(--t3);margin-top:7px;line-height:1.6;"></div>
       </div>
       <div class="book-row">
         <div class="book-field">
@@ -1174,11 +1219,11 @@ footer{background:var(--void); border-top:1px solid var(--cb); padding:38px 0; p
       <div class="ft-copy">&copy; 2026 Collins Ogbuju. All rights reserved</div>
       <div class="ft-soc">
         <a href="https://linkedin.com/in/collinsogbuju" target="_blank" class="fts" title="LinkedIn"><span class="iconify" data-icon="mdi:linkedin"></span></a>
-        <a href="https://github.com/collinsogbuju" target="_blank" class="fts" title="GitHub"><span class="iconify" data-icon="mdi:github"></span></a>
+        <a href="https://github.com/koltectm" target="_blank" class="fts" title="GitHub"><span class="iconify" data-icon="mdi:github"></span></a>
         <a href="https://medium.com/@collinsogbuju" target="_blank" class="fts" title="Medium"><span class="iconify" data-icon="simple-icons:medium"></span></a>
-        <a href="https://twitter.com/collinsogbuju" target="_blank" class="fts" title="Twitter"><span class="iconify" data-icon="mdi:twitter"></span></a>
-        <a href="https://instagram.com/collinsogbuju" target="_blank" class="fts" title="Instagram"><span class="iconify" data-icon="mdi:instagram"></span></a>
-        <a href="https://facebook.com/collinsogbuju" target="_blank" class="fts" title="Facebook"><span class="iconify" data-icon="mdi:facebook"></span></a>
+        <a href="https://x.com/KoltecTm" target="_blank" class="fts" title="Twitter"><span class="iconify" data-icon="mdi:twitter"></span></a>
+        <a href="https://instagram.com/collins.ogbuju" target="_blank" class="fts" title="Instagram"><span class="iconify" data-icon="mdi:instagram"></span></a>
+        <a href="https://www.facebook.com/share/1GGQ4sUxUC/" target="_blank" class="fts" title="Facebook"><span class="iconify" data-icon="mdi:facebook"></span></a>
         <a href="mailto:collinsogbuju@gmail.com" class="fts" title="Email"><span class="iconify" data-icon="mdi:email-outline"></span></a>
       </div>
     </div>
@@ -1265,13 +1310,13 @@ var PROJECTS = [
 ];
 
 var CERTS = [
-  {iss:'TU Munich / Coursera',          t:'Digitalisation in the Aerospace Industry',          date:'2024', link:'assets/certificates/digitalisation-aerospace.pdf',      linkType:'pdf'},
-  {iss:'TU Munich / Coursera',          t:'Digitalisation in Aeronautics',                     date:'2024', link:'assets/certificates/digitalisation-aeronautics.pdf',     linkType:'pdf'},
-  {iss:'TU Munich / Coursera',          t:'Digitalisation in Space Research',                  date:'2024', link:'assets/certificates/digitalisation-space.pdf',           linkType:'pdf'},
-  {iss:'CSSC / Coursera',               t:'Lean Six Sigma White Belt',                         date:'2025', link:'assets/certificates/lean-six-sigma-white-belt.pdf',      linkType:'pdf'},
-  {iss:'Society of Petroleum Engineers',t:'SPE Nigeria Student Membership',                    date:'2025', link:'assets/certificates/spe-membership.jpg',                 linkType:'image'},
-  {iss:'Design Institute',              t:'UI/UX Design Certificate',                          date:'2023', link:'assets/certificates/uiux-certificate.jpg',               linkType:'image'},
-  {iss:'Green-Net Technologies LTD',    t:'Certificate of Computer Proficiency',               date:'2022', link:'assets/certificates/computer-proficiency.jpg',           linkType:'image'},
+  {iss:'TU Munich / Coursera',           t:'Digitalisation in the Aerospace Industry',          date:'2023', link:'assets/certificates/digitalisation-aerospace.pdf',      linkType:'pdf'},
+  {iss:'TU Munich / Coursera',           t:'Digitalisation in Aeronautics',                     date:'2023', link:'assets/certificates/digitalisation-aeronautics.pdf',     linkType:'pdf'},
+  {iss:'TU Munich / Coursera',           t:'Digitalisation in Space Research',                  date:'2023', link:'assets/certificates/digitalisation-space.pdf',           linkType:'pdf'},
+  {iss:'GOLEANSIXSIGMA / GLSS',          t:'Lean Six Sigma White Belt',                         date:'2025', link:'assets/certificates/lean-six-sigma-white-belt.pdf',      linkType:'pdf'},
+  {iss:'Society of Petroleum Engineers', t:'SPE Nigeria Student Membership',                    date:'2025', link:'assets/certificates/spe-membership.pdf',                 linkType:'pdf'},
+  {iss:'Design Institute',               t:'UI/UX Design Certificate',                          date:'2022', link:'assets/certificates/uiux-certificate.pdf',               linkType:'pdf'},
+  {iss:'Green-Net Technologies LTD',     t:'Certificate of Computer Proficiency',               date:'2020', link:'assets/certificates/computer-proficiency.pdf',           linkType:'pdf'},
   {iss:'Coursera (In Progress)',         t:'Google Data Analytics Professional Certificate',    date:'In Progress', link:null, wip:true},
   {iss:'Coursera (In Progress)',         t:'Google Project Management Certificate',             date:'In Progress', link:null, wip:true}
 ];
@@ -1737,28 +1782,116 @@ function switchBookTab(tab, btn) {
   var pane = document.getElementById('pane-' + tab);
   if (pane) pane.classList.add('a');
 }
+/* =====================================================================
+   BOOKING — Meet links mapped to each calendar slot
+===================================================================== */
+var MEET_SLOTS = {
+  'tuesday':    {
+    link: 'https://meet.google.com/bhz-tbpd-xis',
+    label: 'meet.google.com/bhz-tbpd-xis',
+    time: 'Every Tuesday, 6:00pm – 7:00pm WAT',
+    note: 'Best for: Engineering roles, career conversations, Seplat / ExxonMobil enquiries, SPE discussions.'
+  },
+  'thursday':   {
+    link: 'https://meet.google.com/tcq-epge-gde',
+    label: 'meet.google.com/tcq-epge-gde',
+    time: 'Every Thursday, 6:00pm – 7:00pm WAT',
+    note: 'Best for: Freelance projects, web development, graphic design, data analysis, CAD, ghostwriting.'
+  },
+  'saturday-am':{
+    link: 'https://meet.google.com/uav-oqqd-quw',
+    label: 'meet.google.com/uav-oqqd-quw',
+    time: 'Every Saturday, 10:00am – 12:00pm WAT',
+    note: 'Best for: Formal interviews, new client discovery, all enquiries, in-person meetings (Port Harcourt).'
+  },
+  'saturday-pm':{
+    link: 'https://meet.google.com/mhh-qdeu-vry',
+    label: 'meet.google.com/mhh-qdeu-vry',
+    time: 'Every Saturday, 2:00pm – 3:00pm WAT',
+    note: 'Best for: Follow-up calls, second interviews, ongoing client check-ins, quick 15-min chats.'
+  }
+};
+
+function updateSlotInfo() {
+  var day  = document.getElementById('b-day').value;
+  var box  = document.getElementById('slot-info');
+  var link = document.getElementById('slot-meet-link');
+  var txt  = document.getElementById('slot-meet-text');
+  var note = document.getElementById('slot-note');
+  if (!day || !MEET_SLOTS[day]) { box.style.display = 'none'; return; }
+  var slot = MEET_SLOTS[day];
+  link.href      = slot.link;
+  txt.textContent = slot.label;
+  note.textContent = slot.time + '. ' + slot.note;
+  box.style.display = 'block';
+  if (window.Iconify) Iconify.scan(box);
+  /* Auto-set a sensible default time based on slot */
+  var timeInput = document.getElementById('b-time');
+  if (day === 'tuesday' || day === 'thursday') timeInput.value = '18:00';
+  if (day === 'saturday-am') timeInput.value = '10:00';
+  if (day === 'saturday-pm') timeInput.value = '14:00';
+}
+
 function submitBooking() {
-  var name    = document.getElementById('b-name').value.trim();
-  var email   = document.getElementById('b-email').value.trim();
-  var type    = document.getElementById('b-type').value;
-  var dur     = document.getElementById('b-dur').value;
-  var date    = document.getElementById('b-date').value;
-  var time    = document.getElementById('b-time').value;
-  var note    = document.getElementById('b-note').value.trim();
+  var name  = document.getElementById('b-name').value.trim();
+  var email = document.getElementById('b-email').value.trim();
+  var day   = document.getElementById('b-day').value;
+  var type  = document.getElementById('b-type').value;
+  var dur   = document.getElementById('b-dur').value;
+  var date  = document.getElementById('b-date').value;
+  var time  = document.getElementById('b-time').value;
+  var note  = document.getElementById('b-note').value.trim();
+
   if (!name || !email) { alert('Please enter your name and email.'); return; }
-  // Build Google Calendar link
-  var typeMap = {video:'video+call', phone:'phone+call', person:'in-person+meeting'};
-  var title = encodeURIComponent('Meeting with Collins Ogbuju - ' + (typeMap[type] || type));
-  var details = encodeURIComponent('Requested by: ' + name + '\nEmail: ' + email + '\nDuration: ' + dur + ' min\nNotes: ' + (note || 'N/A'));
+  if (!day) { alert('Please select a preferred day.'); return; }
+
+  var slot     = MEET_SLOTS[day] || {};
+  var meetLink = slot.link || '';
+  var typeMap  = {video:'Video Call (Google Meet)', phone:'Phone Call', person:'In-Person Meeting'};
+  var typeLabel = typeMap[type] || type;
+
+  /* Build the event description including the Meet link */
+  var descParts = [
+    'Booking request from: ' + name,
+    'Email: ' + email,
+    'Meeting type: ' + typeLabel,
+    'Duration: ' + dur + ' minutes',
+    'Slot: ' + (slot.time || day),
+    'Notes: ' + (note || 'N/A')
+  ];
+  if (meetLink) descParts.push('Google Meet link: ' + meetLink);
+
+  var title   = encodeURIComponent('Meeting with Collins Ogbuju — ' + typeLabel);
+  var details = encodeURIComponent(descParts.join('\n'));
+
   var gcalURL = 'https://calendar.google.com/calendar/render?action=TEMPLATE'
-    + '&text=' + title
+    + '&text='    + title
     + '&details=' + details
     + '&add=collinsogbuju@gmail.com';
+
+  /* Add conference link so it appears in the invite */
+  if (meetLink) gcalURL += '&location=' + encodeURIComponent(meetLink);
+
   if (date && time) {
     var dt = date.replace(/-/g,'') + 'T' + time.replace(':','') + '00';
-    gcalURL += '&dates=' + dt + '/' + dt;
+    /* Calculate end time based on duration */
+    var startMs  = new Date(date + 'T' + time + ':00').getTime();
+    var endMs    = startMs + (parseInt(dur,10) * 60000);
+    var endDate  = new Date(endMs);
+    var endH     = ('0' + endDate.getHours()).slice(-2);
+    var endM     = ('0' + endDate.getMinutes()).slice(-2);
+    var dtEnd    = date.replace(/-/g,'') + 'T' + endH + endM + '00';
+    gcalURL += '&dates=' + dt + '/' + dtEnd;
   }
+
+  /* Open the calendar invite for the visitor */
   window.open(gcalURL, '_blank');
+
+  /* Also open the Meet link directly so they have it immediately */
+  if (meetLink && type === 'video') {
+    setTimeout(function() { window.open(meetLink, '_blank'); }, 800);
+  }
+
   closeBooking();
 }
 
